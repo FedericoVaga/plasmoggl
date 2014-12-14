@@ -1,0 +1,19 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Plasmoggl
+Comment=Toggl interface
+Type=Service
+ServiceTypes=Plasma/Applet
+Icon=chronometer
+X-Plasma-API=python
+X-Plasma-MainScript=code/plasmoggl.py
+X-Plasma-DefaultSize=512,32
+X-KDE-PluginInfo-Author=Federico Vaga
+X-KDE-PluginInfo-Email=federico.vaga@gmail.com
+X-KDE-PluginInfo-Name=plasmoggl
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-Website=https://github.com/FedericoVaga/plasmoggl
+X-KDE-PluginInfo-Category=Utilities
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPLv3
+X-KDE-PluginInfo-EnabledByDefault=true
