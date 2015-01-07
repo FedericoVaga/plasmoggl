@@ -52,3 +52,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Project ignore
+plasmoggl/contents/code/toggl.py
+
