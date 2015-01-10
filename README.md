@@ -23,6 +23,11 @@ If you already have an older version of the plasmoid, you can update it:
     make update
 
 
+CONFIGURATION
+-------------
+Refer to toggl-cli[2] project for the configuration
+
+
 CHANGE LOG
 ----------
 
