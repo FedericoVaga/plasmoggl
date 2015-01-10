@@ -1,8 +1,8 @@
 
-APP=plasmoggl
+APP=.
 
 all:
-	cp toggl-cli/toggl.py plasmoggl/contents/code/toggl.py
+	cp toggl-cli/toggl.py contents/code/toggl.py
 
 install: all
 	plasmapkg -t plasmoid -i $(APP)

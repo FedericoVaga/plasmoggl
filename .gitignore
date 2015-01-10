@@ -54,5 +54,5 @@ docs/_build/
 target/
 
 # Project ignore
-plasmoggl/contents/code/toggl.py
+contents/code/toggl.py
 
