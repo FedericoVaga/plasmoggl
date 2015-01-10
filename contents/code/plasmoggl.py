@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-# <Copyright and license information goes here.>
+
+"""
+Copyright (c) 2015 Federico Vaga <federico.vaga@gmail.com>
+License GNU Public License v3
+"""
+
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QGraphicsLinearLayout
