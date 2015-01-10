@@ -25,12 +25,16 @@ If you already have an older version of the plasmoid, you can update it:
 
 CONFIGURATION
 -------------
-Refer to toggl-cli[2] project for the configuration
+Refer to toggl-cli[2] project for the configuration.
 
+Since version 1.1 is it possible to configure the plasmoid using its graphical
+user interface
 
 CHANGE LOG
 ----------
 
+1.1
+- add graphical configuration
 1.0
 - basic task entry
 

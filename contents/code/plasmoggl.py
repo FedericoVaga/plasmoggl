@@ -6,11 +6,13 @@ License GNU Public License v3
 """
 
 from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, SIGNAL
 from PyQt4.QtGui import QGraphicsLinearLayout
 from PyKDE4.plasma import Plasma
 from PyKDE4 import plasmascript
+from PyKDE4.kdeui import KPageDialog, KDialog, KIcon
 
+from config.config import ConfigDialog
 import toggl
 import time
 
@@ -28,9 +30,19 @@ class Plasmoggl(plasmascript.Applet):
         plasmascript.Applet.__init__(self,parent)
 
     def init(self):
-        self.setAspectRatioMode(Plasma.FixedSize)
-        self.setHasConfigurationInterface(False)
+        # Retreive configuration from config file
+        self.settings = {}
+        self.settings["api_token"] = str(toggl.Config().get("auth", "api_token"))
+        self.settings["login"] = str(toggl.Config().get("auth", "username"))
+        self.settings["password"] = str(toggl.Config().get("auth", "password"))
+        self.settings["prefer_token"] = bool(toggl.Config().get("options", "prefer_token"))
+        self.setHasConfigurationInterface(True)
+        try:
+            toggl.Config().validate_auth()
+        except Exception as e:
+            self.showConfigurationInterfaces()
 
+        self.setAspectRatioMode(Plasma.FixedSize)
         self.theme = Plasma.Svg(self)
         self.theme.setImagePath("widgets/background")
         self.setBackgroundHints(Plasma.Applet.DefaultBackground)
@@ -62,6 +74,36 @@ class Plasmoggl(plasmascript.Applet):
         # Add Layout to the applet
         self.applet.setLayout(self.layout)
         self.__guiUpdate()
+
+    def createConfigurationInterface(self, parent):
+        self.pconfig = ConfigDialog(self, self.settings)
+        widget = parent.addPage(self.pconfig, "Toggl integration")
+        widget.setIcon(KIcon(self.package().path() + "contents/images/toggl.png"))
+        self.connect(parent, SIGNAL("okClicked()"), self.configOK)
+        self.connect(parent, SIGNAL("cancelClicked()"), self.configCancel)
+
+    def showConfigurationInterfaces(self):
+        dialog = KPageDialog()
+        dialog.setFaceType(KPageDialog.List)
+        dialog.setButtons(KDialog.ButtonCode(KDialog.Ok | KDialog.Cancel))
+        self.createConfigurationInterface(dialog)
+        dialog.exec_()
+
+    def configOK(self):
+        self.settings.update(self.pconfig.exportSettings())
+        if "login" in self.settings:
+            toggl.Config().set("auth", "username", self.settings["login"])
+        if "password" in self.settings:
+            toggl.Config().set("auth", "password", self.settings["password"])
+        if "api_token" in self.settings:
+            toggl.Config().set("auth", "api_token", self.settings["api_token"])
+        if "prefer_token" in self.settings:
+            toggl.Config().set("options", "prefer_token", self.settings["prefer_token"])
+        toggl.Config().store()
+        self.pconfig.deleteLater()
+
+    def configCancel(self):
+        self.pconfig.delateLater()
 
     def _fill_project_combo(self, cmb):
         prj = toggl.ProjectList()
