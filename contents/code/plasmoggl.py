@@ -66,6 +66,12 @@ class Plasmoggl(plasmascript.Applet):
                                         self.HEIGHT);
         self.layout.addItem(self.projectCombo)
 
+        # Time Label
+        self.timeLabel = Plasma.Label(self.applet)
+        self.timeLabel.setText("00:00:00")
+        self.timeLabel.setStyleSheet("margin-left: 10px;" + self.HEIGHT);
+        self.layout.addItem(self.timeLabel)
+
         # Start and Stop button
         self.startButton = Plasma.PushButton(self.applet)
         self.startButton.clicked.connect(self.__toggle_working)
