@@ -30,6 +30,7 @@ Refer to toggl-cli[2] project for the configuration.
 Since version 1.1 is it possible to configure the plasmoid using its graphical
 user interface
 
+
 CHANGE LOG
 ----------
 
@@ -42,6 +43,12 @@ CHANGE LOG
 DEPENDENCIES
 ------------
 The plasmoid is written in Python using PyQT4 and PyKDE4. For the toggl interface it uses classes from the toggl-cli[2] project.
+
+It depends on the following Pyhton modules which are not part of the package:
+- PyKDE4
+- PyQT4
+- iso8601
+- pytz
 
 
 REFERENCES
