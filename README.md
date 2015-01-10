@@ -1,4 +1,10 @@
-This is a KDE plasmoid for the Toggl[1] web service.
+Author: Federico Vaga <federico.vaga@gmail.com>
+
+This is a KDE plasmoid for the Toggl[1] web service. You can find the
+the source code repository on github at the following address:
+
+   https://github.com/FedericoVaga/plasmoggl
+
 
 INSTALLATION
 ------------
