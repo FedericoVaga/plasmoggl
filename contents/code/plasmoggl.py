@@ -6,7 +6,7 @@ License GNU Public License v3
 """
 
 from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt, SIGNAL
+from PyQt4.QtCore import Qt, SIGNAL, QTime, pyqtSignature, QString
 from PyQt4.QtGui import QGraphicsLinearLayout
 from PyKDE4.plasma import Plasma
 from PyKDE4 import plasmascript
@@ -17,7 +17,7 @@ from config.plasmoggl_config import PlasmogglConfigDialog
 import toggl
 
 from ConfigParser import ConfigParser
-import os
+import datetime, time, os
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -62,8 +62,7 @@ class Plasmoggl(plasmascript.Applet):
 
         # Time Label
         self.timeLabel = Plasma.Label(self.applet)
-        self.timeLabel.setText("00:00:00")
-        self.timeLabel.setStyleSheet("margin-left: 10px;" + self.HEIGHT);
+        self.timeLabel.setStyleSheet("font-weight: bold;margin-left: 10px;" + self.HEIGHT);
         self.layout.addItem(self.timeLabel)
 
         # Start and Stop button
@@ -73,6 +72,11 @@ class Plasmoggl(plasmascript.Applet):
 
         # Add Layout to the applet
         self.applet.setLayout(self.layout)
+
+        # Prepare time engine
+        self.show_second = True  # FIXME prepare config interface for this
+        self.connectToEngine()
+        self.start = QTime()
 
         self.__guiUpdate()
 
@@ -206,10 +210,11 @@ class Plasmoggl(plasmascript.Applet):
             btnStyle = "background-color:#FF0000;"
             pid = self.current_work.get("pid")
             prj = toggl.ProjectList().find_by_id(pid)
+            self.__guiUpdateTimeLabel(int(time.time()) + self.current_work.get("duration"))
         else:
             self.lineEdit.setText("")
             self.startButton.setText("Start")
-
+            self.__guiUpdateTimeLabel(0)
             btnStyle = "background-color:#4bc800;"
             prj = None
 
@@ -220,6 +225,36 @@ class Plasmoggl(plasmascript.Applet):
             self.projectCombo.nativeWidget().setCurrentItem(prj["name"])
         else:
             self.projectCombo.nativeWidget().setCurrentItem("SELECT PROJECT")
+
+    def connectToEngine(self):
+        """
+        It prepares the time engine, if necessary
+        """
+        if not self.settings["show_elapsed"]:
+            return
+
+        self.timeEngine = self.dataEngine("time")
+        if self.show_second:
+            self.timeEngine.connectSource("Local", self, 1000)
+        else:
+            self.timeEngine.connectSource("Local",
+                self, 6000, Plasma.AlignToMinute)
+
+    @pyqtSignature("dataUpdated(const QString &, const Plasma::DataEngine::Data &)")
+    def dataUpdated(self, sourceName, data):
+        if self.current_work is None:
+            return  # timer is not running
+
+        self.__guiUpdateTimeLabel(int(time.time()) + self.current_work.get("duration"))
+
+    def __guiUpdateTimeLabel(self, s):
+        if self.settings["show_seconds"]:
+            delta = datetime.timedelta(seconds=s)
+            str_delta = str(delta)
+        else:
+            delta = datetime.timedelta(minutes=(s / 60))
+            str_delta = str(delta)[0:-3] + ":--"
+        self.timeLabel.setText(str_delta)
 
 def CreateApplet(parent):
     return Plasmoggl(parent)
