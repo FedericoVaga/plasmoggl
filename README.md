@@ -49,6 +49,7 @@ It depends on the following Pyhton modules which are not part of the package:
 - PyQT4
 - iso8601
 - pytz
+- requests
 
 
 REFERENCES
