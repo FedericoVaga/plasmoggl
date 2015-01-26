@@ -50,6 +50,7 @@ It depends on the following Pyhton modules which are not part of the package:
 - iso8601
 - pytz
 - requests
+- dateutil
 
 
 REFERENCES
