@@ -133,9 +133,10 @@ class Plasmoggl(plasmascript.Applet):
         """
         It create the configuration dialog by adding the different sections
         """
-        self.pconfig = ConfigDialog(self, self.settings)
-        widget = parent.addPage(self.pconfig, "Toggl integration")
-        widget.setIcon(KIcon(self.package().path() + "contents/images/toggl.png"))
+        self.toggl_cli_config = ConfigDialog(self, self.settings)
+        widget = parent.addPage(self.toggl_cli_config, "Toggl integration")
+        widget.setIcon(KIcon(self.package().path() +
+                             "contents/images/toggl.png"))
 
         self.plasmoggl_config = PlasmogglConfigDialog(self, self.settings)
         widget = parent.addPage(self.plasmoggl_config, "Plasmoggl")
@@ -160,7 +161,7 @@ class Plasmoggl(plasmascript.Applet):
         It saves the configuration
         """
         # Toggl integration
-        self.settings.update(self.pconfig.exportSettings())
+        self.settings.update(self.toggl_cli_config.exportSettings())
         if "login" in self.settings:
             toggl.Config().set("auth", "username",
                                self.settings["login"])
@@ -191,7 +192,7 @@ class Plasmoggl(plasmascript.Applet):
         # Changing Plasmoggl configuration need a GUI update
         self.__guiUpdate()
 
-        self.pconfig.deleteLater()
+        self.toggl_cli_config.deleteLater()
 
     def configCancel(self):
         """
