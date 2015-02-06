@@ -28,6 +28,7 @@ except AttributeError:
 class Plasmoggl(plasmascript.Applet):
     DEFAULT_PROJECT = "SELECT PROJECT"
     HEIGHT = "height: 32px;"
+    BORDER = "border: 1px solid black;"
     PLASMOGGL_CONFIG_FILE = "~/.plasmogglcfg"
 
     def __init__(self,parent,args=None):
@@ -48,21 +49,21 @@ class Plasmoggl(plasmascript.Applet):
         # Insert Task
         self.lineEdit = Plasma.LineEdit(self.applet)
         self.lineEdit.setClickMessage("What are you working on?")
-        self.lineEdit.setStyleSheet("border: 1px solid black; width:300px;" +
-                                    self.HEIGHT);
+        self.lineEdit.setStyleSheet("width:300px;" +
+                                    self.HEIGHT + self.BORDER);
         self.layout.addItem(self.lineEdit)
 
         self.projectCombo = Plasma.ComboBox(self.applet)
         self.projectCombo.addItem("SELECT PROJECT")
         for pj in toggl.ProjectList().project_list:
             self.projectCombo.addItem(pj["name"])
-        self.projectCombo.setStyleSheet("border: 1px solid black;" +
-                                        self.HEIGHT);
+        self.projectCombo.setStyleSheet(self.HEIGHT + self.BORDER)
         self.layout.addItem(self.projectCombo)
 
         # Time Label
         self.timeLabel = Plasma.Label(self.applet)
-        self.timeLabel.setStyleSheet("font-weight: bold;margin-left: 10px;" + self.HEIGHT);
+        self.timeLabel.setStyleSheet("font-weight: bold;margin-left: 10px;" +
+                                     self.HEIGHT);
         self.layout.addItem(self.timeLabel)
 
         # Start and Stop button
@@ -218,7 +219,7 @@ class Plasmoggl(plasmascript.Applet):
             btnStyle = "background-color:#4bc800;"
             prj = None
 
-        btnStyle += "border: 1px solid black; color: #FFFFFF; padding: 0 5px; "  + self.HEIGHT
+        btnStyle += "color: #FFFFFF; padding: 0 5px; " + self.HEIGHT + self.BORDER
         self.startButton.setStyleSheet(btnStyle)
 
         if prj is not None:
