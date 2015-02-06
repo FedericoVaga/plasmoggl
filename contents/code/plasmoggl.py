@@ -193,12 +193,14 @@ class Plasmoggl(plasmascript.Applet):
         self.__guiUpdate()
 
         self.toggl_cli_config.deleteLater()
+        self.plasmoggl_config.deleteLater()
 
     def configCancel(self):
         """
         It simply close the configuration interface
         """
         self.pconfig.delateLater()
+        self.plasmoggl_config.deleteLater()
 
     def _fill_project_combo(self, cmb):
         prj = toggl.ProjectList()
