@@ -28,5 +28,5 @@ class ConfigDialog(QWidget, Ui_PlasmogglConfigDialog):
             'api_token': str(self.api.text()),
             'login': str(self.login.text()),
             'password': str(self.password.text()),
-            'prefer_token': str(self.ptoken.isChecked()),
+            'prefer_token': self.ptoken.isChecked(),
         }
