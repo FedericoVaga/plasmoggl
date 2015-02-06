@@ -59,10 +59,13 @@ class Plasmoggl(plasmascript.Applet):
                                     self.HEIGHT + self.BORDER)
         self.layout.addItem(self.lineEdit)
 
+        # workspace combo
+        self.workspaceCombo = Plasma.ComboBox(self.applet)
+        self.workspaceCombo.setStyleSheet(self.HEIGHT + self.BORDER)
+        self.layout.addItem(self.workspaceCombo)
+
+        # project combo
         self.projectCombo = Plasma.ComboBox(self.applet)
-        self.projectCombo.addItem("SELECT PROJECT")
-        for pj in toggl.ProjectList().project_list:
-            self.projectCombo.addItem(pj["name"])
         self.projectCombo.setStyleSheet(self.HEIGHT + self.BORDER)
         self.layout.addItem(self.projectCombo)
 
@@ -82,6 +85,12 @@ class Plasmoggl(plasmascript.Applet):
 
         # Prepare time engine
         self.connectToEngine()
+
+        # Set workspaces list
+        for ws in toggl.WorkspaceList():
+            self.workspaceCombo.addItem(ws["name"])
+        self.workspaceCombo.textChanged.connect(self._workspace_change)
+        self._workspace_change(self.workspaceCombo.text())
 
         self.__guiUpdate()
 
@@ -144,6 +153,16 @@ class Plasmoggl(plasmascript.Applet):
         """
         self.pconfig.delateLater()
         self.plasmoggl_config.deleteLater()
+
+    def _workspace_change(self, wname):
+        """
+        User has changed the workspace. So we have to update the project list
+        """
+        self.projectCombo.clear()
+        toggl.ProjectList().fetch(wname)
+        self.projectCombo.addItem("SELECT PROJECT")
+        for pj in toggl.ProjectList():
+            self.projectCombo.addItem(pj["name"])
 
     def _fill_project_combo(self, cmb):
         prj = toggl.ProjectList()
