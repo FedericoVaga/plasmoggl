@@ -75,11 +75,23 @@ class Plasmoggl(plasmascript.Applet):
         self.applet.setLayout(self.layout)
 
         # Prepare time engine
-        self.show_second = True  # FIXME prepare config interface for this
         self.connectToEngine()
-        self.start = QTime()
 
         self.__guiUpdate()
+
+    def connectToEngine(self):
+        """
+        It prepares the time engine, if necessary
+        """
+        if not self.settings["show_elapsed"]:
+            return
+
+        self.timeEngine = self.dataEngine("time")
+        if self.settings["show_seconds"]:
+            self.timeEngine.connectSource("Local", self, 1000)
+        else:
+            self.timeEngine.connectSource("Local",
+                self, 6000, Plasma.AlignToMinute)
 
     def __loadConfiguration(self):
         """
@@ -110,6 +122,8 @@ class Plasmoggl(plasmascript.Applet):
             self.cfg.set("plasmoggl", "show_seconds", False)
         self.settings["show_seconds"] = self.cfg.get("plasmoggl", "show_seconds").lower() == "true"
 
+        # If the configuration is not valid, then open the configuration
+        # interface
         try:
             toggl.Config().validate_auth()
         except Exception as e:
@@ -125,7 +139,8 @@ class Plasmoggl(plasmascript.Applet):
 
         self.plasmoggl_config = PlasmogglConfigDialog(self, self.settings)
         widget = parent.addPage(self.plasmoggl_config, "Plasmoggl")
-        widget.setIcon(KIcon(self.package().path() + "contents/images/plasmoggl.png"))
+        widget.setIcon(KIcon(self.package().path() +
+                             "contents/images/plasmoggl.png"))
 
         self.connect(parent, SIGNAL("okClicked()"), self.configOK)
         self.connect(parent, SIGNAL("cancelClicked()"), self.configCancel)
@@ -147,21 +162,28 @@ class Plasmoggl(plasmascript.Applet):
         # Toggl integration
         self.settings.update(self.pconfig.exportSettings())
         if "login" in self.settings:
-            toggl.Config().set("auth", "username", self.settings["login"])
+            toggl.Config().set("auth", "username",
+                               self.settings["login"])
         if "password" in self.settings:
-            toggl.Config().set("auth", "password", self.settings["password"])
+            toggl.Config().set("auth", "password",
+                               self.settings["password"])
         if "api_token" in self.settings:
-            toggl.Config().set("auth", "api_token", self.settings["api_token"])
+            toggl.Config().set("auth", "api_token",
+                               self.settings["api_token"])
         if "prefer_token" in self.settings:
-            toggl.Config().set("options", "prefer_token", self.settings["prefer_token"])
+            toggl.Config().set("options", "prefer_token",
+                               self.settings["prefer_token"])
         toggl.Config().store()
 
         # Plasmoggl configuration
         self.settings.update(self.plasmoggl_config.exportSettings())
         if "show_elapsed" in self.settings:
-            self.cfg.set("plasmoggl", "show_elapsed", self.settings["show_elapsed"])
+            self.cfg.set("plasmoggl", "show_elapsed",
+                         self.settings["show_elapsed"])
         if "show_seconds" in self.settings:
-            self.cfg.set("plasmoggl", "show_seconds", self.settings["show_seconds"])
+            self.cfg.set("plasmoggl", "show_seconds",
+                         self.settings["show_seconds"])
+
         with open(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 'w') as cfgfile:
             self.cfg.write(cfgfile)
         os.chmod(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 0600)
@@ -227,28 +249,21 @@ class Plasmoggl(plasmascript.Applet):
         else:
             self.projectCombo.nativeWidget().setCurrentItem("SELECT PROJECT")
 
-    def connectToEngine(self):
-        """
-        It prepares the time engine, if necessary
-        """
-        if not self.settings["show_elapsed"]:
-            return
-
-        self.timeEngine = self.dataEngine("time")
-        if self.show_second:
-            self.timeEngine.connectSource("Local", self, 1000)
-        else:
-            self.timeEngine.connectSource("Local",
-                self, 6000, Plasma.AlignToMinute)
-
     @pyqtSignature("dataUpdated(const QString &, const Plasma::DataEngine::Data &)")
     def dataUpdated(self, sourceName, data):
+        """
+        Data update ready
+        """
         if self.current_work is None:
             return  # timer is not running
 
-        self.__guiUpdateTimeLabel(int(time.time()) + self.current_work.get("duration"))
+        self.__guiUpdateTimeLabel(int(time.time()) +
+                                  self.current_work.get("duration"))
 
     def __guiUpdateTimeLabel(self, s):
+        """
+        It updates the elapsed timer
+        """
         if self.settings["show_seconds"]:
             delta = datetime.timedelta(seconds=s)
             str_delta = str(delta)
@@ -258,4 +273,7 @@ class Plasmoggl(plasmascript.Applet):
         self.timeLabel.setText(str_delta)
 
 def CreateApplet(parent):
+    """
+    Main entry point of the plasmoid
+    """
     return Plasmoggl(parent)
