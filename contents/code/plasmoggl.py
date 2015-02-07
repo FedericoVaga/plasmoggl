@@ -162,6 +162,29 @@ class Plasmoggl(plasmascript.Applet):
         """
         # Toggl integration
         self.settings.update(self.toggl_cli_config.exportSettings())
+        self._save_config_toggl_cli()
+
+        # Plasmoggl configuration
+        self.settings.update(self.plasmoggl_config.exportSettings())
+        self._save_config_plasmoggl()
+
+        # Changing Plasmoggl configuration need a GUI update
+        self.__guiUpdate()
+
+        self.toggl_cli_config.deleteLater()
+        self.plasmoggl_config.deleteLater()
+
+    def configCancel(self):
+        """
+        It simply close the configuration interface
+        """
+        self.pconfig.delateLater()
+        self.plasmoggl_config.deleteLater()
+
+    def _save_config_toggl_cli(self):
+        """
+        It save the toggl-cli configuration
+        """
         if "login" in self.settings:
             toggl.Config().set("auth", "username",
                                self.settings["login"])
@@ -176,8 +199,10 @@ class Plasmoggl(plasmascript.Applet):
                                self.settings["prefer_token"])
         toggl.Config().store()
 
-        # Plasmoggl configuration
-        self.settings.update(self.plasmoggl_config.exportSettings())
+    def _save_config_plasmoggl(self):
+        """
+        It saves the plasmoggl configuration
+        """
         if "show_elapsed" in self.settings:
             self.cfg.set("plasmoggl", "show_elapsed",
                          self.settings["show_elapsed"])
@@ -188,19 +213,6 @@ class Plasmoggl(plasmascript.Applet):
         with open(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 'w') as cfgfile:
             self.cfg.write(cfgfile)
         os.chmod(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 0600)
-
-        # Changing Plasmoggl configuration need a GUI update
-        self.__guiUpdate()
-
-        self.toggl_cli_config.deleteLater()
-        self.plasmoggl_config.deleteLater()
-
-    def configCancel(self):
-        """
-        It simply close the configuration interface
-        """
-        self.pconfig.delateLater()
-        self.plasmoggl_config.deleteLater()
 
     def _fill_project_combo(self, cmb):
         prj = toggl.ProjectList()
