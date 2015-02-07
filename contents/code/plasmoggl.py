@@ -17,7 +17,9 @@ from config.plasmoggl_config import PlasmogglConfigDialog
 import toggl
 
 from ConfigParser import ConfigParser
-import datetime, time, os
+import datetime
+import time
+import os
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -25,14 +27,15 @@ except AttributeError:
     def _fromUtf8(s):
         return s
 
+
 class Plasmoggl(plasmascript.Applet):
     DEFAULT_PROJECT = "SELECT PROJECT"
     HEIGHT = "height: 32px;"
     BORDER = "border: 1px solid black;"
     PLASMOGGL_CONFIG_FILE = "~/.plasmogglcfg"
 
-    def __init__(self,parent,args=None):
-        plasmascript.Applet.__init__(self,parent)
+    def __init__(self, parent, args=None):
+        plasmascript.Applet.__init__(self, parent)
 
     def init(self):
         self.__loadConfiguration()
@@ -50,7 +53,7 @@ class Plasmoggl(plasmascript.Applet):
         self.lineEdit = Plasma.LineEdit(self.applet)
         self.lineEdit.setClickMessage("What are you working on?")
         self.lineEdit.setStyleSheet("width:300px;" +
-                                    self.HEIGHT + self.BORDER);
+                                    self.HEIGHT + self.BORDER)
         self.layout.addItem(self.lineEdit)
 
         self.projectCombo = Plasma.ComboBox(self.applet)
@@ -63,7 +66,7 @@ class Plasmoggl(plasmascript.Applet):
         # Time Label
         self.timeLabel = Plasma.Label(self.applet)
         self.timeLabel.setStyleSheet("font-weight: bold;margin-left: 10px;" +
-                                     self.HEIGHT);
+                                     self.HEIGHT)
         self.layout.addItem(self.timeLabel)
 
         # Start and Stop button
@@ -90,8 +93,8 @@ class Plasmoggl(plasmascript.Applet):
         if self.settings["show_seconds"]:
             self.timeEngine.connectSource("Local", self, 1000)
         else:
-            self.timeEngine.connectSource("Local",
-                self, 6000, Plasma.AlignToMinute)
+            self.timeEngine.connectSource("Local", self, 6000,
+                                          Plasma.AlignToMinute)
 
     def __loadConfiguration(self):
         """
@@ -104,10 +107,14 @@ class Plasmoggl(plasmascript.Applet):
 
         # Retreive configuration from toggl-cli config file
         self.settings = {}
-        self.settings["api_token"] = str(toggl.Config().get("auth", "api_token"))
-        self.settings["login"] = str(toggl.Config().get("auth", "username"))
-        self.settings["password"] = str(toggl.Config().get("auth", "password"))
-        self.settings["prefer_token"] = bool(toggl.Config().get("options", "prefer_token"))
+        self.settings["api_token"] = str(toggl.Config()
+                                         .get("auth", "api_token"))
+        self.settings["login"] = str(toggl.Config()
+                                     .get("auth", "username"))
+        self.settings["password"] = str(toggl.Config()
+                                        .get("auth", "password"))
+        self.settings["prefer_token"] = bool(toggl.Config()
+                                             .get("options", "prefer_token"))
 
         self.cfg = ConfigParser()
         self.cfg.read(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE))
@@ -210,8 +217,8 @@ class Plasmoggl(plasmascript.Applet):
             self.cfg.set("plasmoggl", "show_seconds",
                          self.settings["show_seconds"])
 
-        with open(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 'w') as cfgfile:
-            self.cfg.write(cfgfile)
+        with open(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 'w') as f:
+            self.cfg.write(f)
         os.chmod(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 0600)
 
     def _fill_project_combo(self, cmb):
@@ -224,7 +231,7 @@ class Plasmoggl(plasmascript.Applet):
         """
         It starts and stops an activity (a.k.a. work)
         """
-        #self.current_work = toggl.TimeEntryList().now()
+        # gself.current_work = toggl.TimeEntryList().now()
         if self.current_work is not None:
             self.current_work.stop()
         else:
@@ -248,7 +255,8 @@ class Plasmoggl(plasmascript.Applet):
             btnStyle = "background-color:#FF0000;"
             pid = self.current_work.get("pid")
             prj = toggl.ProjectList().find_by_id(pid)
-            self.__guiUpdateTimeLabel(int(time.time()) + self.current_work.get("duration"))
+            self.__guiUpdateTimeLabel(int(time.time()) +
+                                      self.current_work.get("duration"))
         else:
             self.lineEdit.setText("")
             self.startButton.setText("Start")
@@ -256,7 +264,8 @@ class Plasmoggl(plasmascript.Applet):
             btnStyle = "background-color:#4bc800;"
             prj = None
 
-        btnStyle += "color: #FFFFFF; padding: 0 5px; " + self.HEIGHT + self.BORDER
+        btnStyle += "color: #FFFFFF; padding: 0 5px; "
+        btnStyle += self.HEIGHT + self.BORDER
         self.startButton.setStyleSheet(btnStyle)
 
         if prj is not None:
@@ -286,6 +295,7 @@ class Plasmoggl(plasmascript.Applet):
             delta = datetime.timedelta(minutes=(s / 60))
             str_delta = str(delta)[0:-3] + ":--"
         self.timeLabel.setText(str_delta)
+
 
 def CreateApplet(parent):
     """
