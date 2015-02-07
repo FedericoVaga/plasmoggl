@@ -5,6 +5,7 @@ Copyright (c) 2015 Federico Vaga <federico.vaga@gmail.com>
 License GNU Public License v3
 """
 
+# KDE
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt, SIGNAL, QTime, pyqtSignature, QString
 from PyQt4.QtGui import QGraphicsLinearLayout
@@ -12,10 +13,13 @@ from PyKDE4.plasma import Plasma
 from PyKDE4 import plasmascript
 from PyKDE4.kdeui import KPageDialog, KDialog, KIcon
 
+# plasmoggl
 from config.config import ConfigDialog
 from config.plasmoggl_config import PlasmogglConfigDialog
+from plasmoggl_config_manager import PlasmogglConfigManager
 import toggl
 
+# System
 from ConfigParser import ConfigParser
 import datetime
 import time
@@ -32,13 +36,12 @@ class Plasmoggl(plasmascript.Applet):
     DEFAULT_PROJECT = "SELECT PROJECT"
     HEIGHT = "height: 32px;"
     BORDER = "border: 1px solid black;"
-    PLASMOGGL_CONFIG_FILE = "~/.plasmogglcfg"
 
     def __init__(self, parent, args=None):
         plasmascript.Applet.__init__(self, parent)
 
     def init(self):
-        self.__loadConfiguration()
+        self.configManager = PlasmogglConfigManager()
 
         self.setAspectRatioMode(Plasma.FixedSize)
         self.theme = Plasma.Svg(self)
@@ -86,66 +89,26 @@ class Plasmoggl(plasmascript.Applet):
         """
         It prepares the time engine, if necessary
         """
-        if not self.settings["show_elapsed"]:
+        if not self.configManager.get("show_elapsed"):
             return
 
         self.timeEngine = self.dataEngine("time")
-        if self.settings["show_seconds"]:
+        if self.configManager.get("show_seconds"):
             self.timeEngine.connectSource("Local", self, 1000)
         else:
             self.timeEngine.connectSource("Local", self, 6000,
                                           Plasma.AlignToMinute)
 
-    def __loadConfiguration(self):
-        """
-        It loads the configuration from config files. This plasmoid is using
-        two configurationf files. One from toggl-cli, and another one for this
-        plasmoid. In order to keep the configuration in the same variable I am
-        using self.setting dictionary
-        """
-        self.setHasConfigurationInterface(True)
-
-        # Retreive configuration from toggl-cli config file
-        self.settings = {}
-        self.settings["api_token"] = str(toggl.Config()
-                                         .get("auth", "api_token"))
-        self.settings["login"] = str(toggl.Config()
-                                     .get("auth", "username"))
-        self.settings["password"] = str(toggl.Config()
-                                        .get("auth", "password"))
-        self.settings["prefer_token"] = bool(toggl.Config()
-                                             .get("options", "prefer_token"))
-
-        self.cfg = ConfigParser()
-        self.cfg.read(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE))
-        if not self.cfg.has_section("plasmoggl"):
-            self.cfg.add_section("plasmoggl")
-
-        if not self.cfg.has_option("plasmoggl", "show_elapsed"):
-            self.cfg.set("plasmoggl", "show_elapsed", False)
-        self.settings["show_elapsed"] = self.cfg.get("plasmoggl", "show_elapsed").lower() == "true"
-
-        if not self.cfg.has_option("plasmoggl", "show_seconds"):
-            self.cfg.set("plasmoggl", "show_seconds", False)
-        self.settings["show_seconds"] = self.cfg.get("plasmoggl", "show_seconds").lower() == "true"
-
-        # If the configuration is not valid, then open the configuration
-        # interface
-        try:
-            toggl.Config().validate_auth()
-        except Exception as e:
-            self.showConfigurationInterfaces()
-
     def createConfigurationInterface(self, parent):
         """
         It create the configuration dialog by adding the different sections
         """
-        self.toggl_cli_config = ConfigDialog(self, self.settings)
+        self.toggl_cli_config = ConfigDialog(self, self.configManager.getAll())
         widget = parent.addPage(self.toggl_cli_config, "Toggl integration")
         widget.setIcon(KIcon(self.package().path() +
                              "contents/images/toggl.png"))
 
-        self.plasmoggl_config = PlasmogglConfigDialog(self, self.settings)
+        self.plasmoggl_config = PlasmogglConfigDialog(self, self.configManager.getAll())
         widget = parent.addPage(self.plasmoggl_config, "Plasmoggl")
         widget.setIcon(KIcon(self.package().path() +
                              "contents/images/plasmoggl.png"))
@@ -167,14 +130,8 @@ class Plasmoggl(plasmascript.Applet):
         """
         It saves the configuration
         """
-        # Toggl integration
-        self.settings.update(self.toggl_cli_config.exportSettings())
-        self._save_config_toggl_cli()
-
-        # Plasmoggl configuration
-        self.settings.update(self.plasmoggl_config.exportSettings())
-        self._save_config_plasmoggl()
-
+        self.configManager.updateConfiguration(self.toggl_cli_config.exportSettings())
+        self.configManager.updateConfiguration(self.plasmoggl_config.exportSettings())
         # Changing Plasmoggl configuration need a GUI update
         self.__guiUpdate()
 
@@ -187,39 +144,6 @@ class Plasmoggl(plasmascript.Applet):
         """
         self.pconfig.delateLater()
         self.plasmoggl_config.deleteLater()
-
-    def _save_config_toggl_cli(self):
-        """
-        It save the toggl-cli configuration
-        """
-        if "login" in self.settings:
-            toggl.Config().set("auth", "username",
-                               self.settings["login"])
-        if "password" in self.settings:
-            toggl.Config().set("auth", "password",
-                               self.settings["password"])
-        if "api_token" in self.settings:
-            toggl.Config().set("auth", "api_token",
-                               self.settings["api_token"])
-        if "prefer_token" in self.settings:
-            toggl.Config().set("options", "prefer_token",
-                               self.settings["prefer_token"])
-        toggl.Config().store()
-
-    def _save_config_plasmoggl(self):
-        """
-        It saves the plasmoggl configuration
-        """
-        if "show_elapsed" in self.settings:
-            self.cfg.set("plasmoggl", "show_elapsed",
-                         self.settings["show_elapsed"])
-        if "show_seconds" in self.settings:
-            self.cfg.set("plasmoggl", "show_seconds",
-                         self.settings["show_seconds"])
-
-        with open(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 'w') as f:
-            self.cfg.write(f)
-        os.chmod(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 0600)
 
     def _fill_project_combo(self, cmb):
         prj = toggl.ProjectList()
@@ -288,7 +212,7 @@ class Plasmoggl(plasmascript.Applet):
         """
         It updates the elapsed timer
         """
-        if self.settings["show_seconds"]:
+        if self.configManager.get("show_seconds"):
             delta = datetime.timedelta(seconds=s)
             str_delta = str(delta)
         else:
