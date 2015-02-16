@@ -1,6 +1,6 @@
 
 APP=.
-OPENDESKTOP=plasmoggl-1.1.plasmoid
+OPENDESKTOP=plasmoggl-1.2.plasmoid
 
 all:
 	cp toggl-cli/toggl.py contents/code/toggl.py

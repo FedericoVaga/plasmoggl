@@ -33,7 +33,9 @@ user interface
 
 CHANGE LOG
 ----------
-
+1.2
+- add support for workspace
+- add time
 1.1
 - add graphical configuration
 1.0
