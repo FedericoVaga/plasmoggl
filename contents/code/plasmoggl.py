@@ -196,6 +196,11 @@ class Plasmoggl(plasmascript.Applet):
             self.lineEdit.setText(self.current_work.get('description'))
             self.startButton.setText("Stop")
             btnStyle = "background-color:#FF0000;"
+
+            wid = self.current_work.get("wid")
+            wrk = toggl.WorkspaceList().find_by_id(wid)
+            self._workspace_change(wrk["name"])
+
             pid = self.current_work.get("pid")
             prj = toggl.ProjectList().find_by_id(pid)
             self.__guiUpdateTimeLabel(int(time.time()) +
@@ -206,10 +211,14 @@ class Plasmoggl(plasmascript.Applet):
             self.__guiUpdateTimeLabel(0)
             btnStyle = "background-color:#4bc800;"
             prj = None
+            wrk = None
 
         btnStyle += "color: #FFFFFF; padding: 0 5px; "
         btnStyle += self.HEIGHT + self.BORDER
         self.startButton.setStyleSheet(btnStyle)
+
+        if wrk is not None:
+            self.workspaceCombo.nativeWidget().setCurrentItem(wrk["name"])
 
         if prj is not None:
             self.projectCombo.nativeWidget().setCurrentItem(prj["name"])
