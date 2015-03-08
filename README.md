@@ -33,6 +33,8 @@ user interface
 
 CHANGE LOG
 ----------
+1.3
+- periodically synchronize with Toggl server
 1.2
 - add support for workspace
 - add time
