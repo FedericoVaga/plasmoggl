@@ -18,6 +18,8 @@ class PlasmogglConfigDialog(QWidget, Ui_PlasmogglConfigDialog):
             self.showSeconds.setChecked(settings['show_seconds'])
         if 'show_elapsed' in settings:
             self.showElapsed.setChecked(settings['show_elapsed'])
+        if 'refresh_period' in settings:
+            self.refreshPeriod.setValue(settings['refresh_period'])
 
         self.showElapsed.toggled.connect(self._showElapsedChange)
         self.showSeconds.setEnabled(self.showElapsed.isChecked())

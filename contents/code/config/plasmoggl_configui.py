@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'plasmoggl_config.ui'
 #
-# Created: Sun Jan 11 17:19:01 2015
+# Created: Sun Mar  8 19:52:06 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,9 +26,9 @@ except AttributeError:
 class Ui_PlasmogglConfigDialog(object):
     def setupUi(self, PlasmogglConfigDialog):
         PlasmogglConfigDialog.setObjectName(_fromUtf8("PlasmogglConfigDialog"))
-        PlasmogglConfigDialog.resize(167, 62)
+        PlasmogglConfigDialog.resize(222, 103)
         self.formLayoutWidget = QtGui.QWidget(PlasmogglConfigDialog)
-        self.formLayoutWidget.setGeometry(QtCore.QRect(10, 5, 151, 46))
+        self.formLayoutWidget.setGeometry(QtCore.QRect(10, 5, 188, 69))
         self.formLayoutWidget.setObjectName(_fromUtf8("formLayoutWidget"))
         self.formLayout_2 = QtGui.QFormLayout(self.formLayoutWidget)
         self.formLayout_2.setMargin(0)
@@ -47,6 +47,12 @@ class Ui_PlasmogglConfigDialog(object):
         self.showSeconds.setText(_fromUtf8(""))
         self.showSeconds.setObjectName(_fromUtf8("showSeconds"))
         self.formLayout_2.setWidget(1, QtGui.QFormLayout.FieldRole, self.showSeconds)
+        self.refreshPeriodLabel = QtGui.QLabel(self.formLayoutWidget)
+        self.refreshPeriodLabel.setObjectName(_fromUtf8("refreshPeriodLabel"))
+        self.formLayout_2.setWidget(2, QtGui.QFormLayout.LabelRole, self.refreshPeriodLabel)
+        self.refreshPeriod = QtGui.QSpinBox(self.formLayoutWidget)
+        self.refreshPeriod.setObjectName(_fromUtf8("refreshPeriod"))
+        self.formLayout_2.setWidget(2, QtGui.QFormLayout.FieldRole, self.refreshPeriod)
 
         self.retranslateUi(PlasmogglConfigDialog)
         QtCore.QMetaObject.connectSlotsByName(PlasmogglConfigDialog)
@@ -55,4 +61,5 @@ class Ui_PlasmogglConfigDialog(object):
         PlasmogglConfigDialog.setWindowTitle(_translate("PlasmogglConfigDialog", "Form", None))
         self.showElapsedLabel.setText(_translate("PlasmogglConfigDialog", "Show elapsed time:", None))
         self.showSecondLabel.setText(_translate("PlasmogglConfigDialog", "Show seconds", None))
+        self.refreshPeriodLabel.setText(_translate("PlasmogglConfigDialog", "Refresh period (s)", None))
 

@@ -221,11 +221,15 @@ class Plasmoggl(plasmascript.Applet):
         """
         Data update ready
         """
+
+        if int(time.time()) % self.configManager.get("refresh_period") == 0:
+            self.__guiUpdate()
+
         if self.current_work is None:
             return  # timer is not running
 
-        self.__guiUpdateTimeLabel(int(time.time()) +
-                                  self.current_work.get("duration"))
+        self.__guiUpdateTimeLabel(int(time.time())
+                                  + self.current_work.get("duration"))
 
     def __guiUpdateTimeLabel(self, s):
         """

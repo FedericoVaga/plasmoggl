@@ -37,6 +37,11 @@ class PlasmogglConfigManager():
             self.cfg.set("plasmoggl", "show_seconds", "false")
         self.settings["show_seconds"] = self.cfg.get("plasmoggl", "show_seconds").lower() == "true"
 
+        if not self.cfg.has_option("plasmoggl", "refresh_period"):
+            self.cfg.set("plasmoggl", "refresh_period", "30")
+        self.settings["refresh_period"] = int(self.cfg.get("plasmoggl",
+                                                           "refresh_period"))
+
         # If the configuration is not valid, then open the configuration
         # interface
         try:
@@ -72,6 +77,9 @@ class PlasmogglConfigManager():
         if "show_seconds" in self.settings:
             self.cfg.set("plasmoggl", "show_seconds",
                          self.settings["show_seconds"])
+        if "refresh_period" in self.settings:
+            self.cfg.set("plasmoggl", "refresh_period",
+                         self.settings["refresh_period"])
 
         with open(os.path.expanduser(self.PLASMOGGL_CONFIG_FILE), 'w') as f:
             self.cfg.write(f)

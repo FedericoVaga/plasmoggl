@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>167</width>
-    <height>62</height>
+    <width>222</width>
+    <height>103</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>10</x>
      <y>5</y>
-     <width>151</width>
-     <height>46</height>
+     <width>188</width>
+     <height>69</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="formLayout_2">
@@ -50,6 +50,16 @@
        <string/>
       </property>
      </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="refreshPeriodLabel">
+      <property name="text">
+       <string>Refresh period (s)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QSpinBox" name="refreshPeriod"/>
     </item>
    </layout>
   </widget>
