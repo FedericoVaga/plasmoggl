@@ -30,11 +30,11 @@ class PlasmogglConfigManager():
             self.cfg.add_section("plasmoggl")
 
         if not self.cfg.has_option("plasmoggl", "show_elapsed"):
-            self.cfg.set("plasmoggl", "show_elapsed", False)
+            self.cfg.set("plasmoggl", "show_elapsed", "false")
         self.settings["show_elapsed"] = self.cfg.get("plasmoggl", "show_elapsed").lower() == "true"
 
         if not self.cfg.has_option("plasmoggl", "show_seconds"):
-            self.cfg.set("plasmoggl", "show_seconds", False)
+            self.cfg.set("plasmoggl", "show_seconds", "false")
         self.settings["show_seconds"] = self.cfg.get("plasmoggl", "show_seconds").lower() == "true"
 
         # If the configuration is not valid, then open the configuration
